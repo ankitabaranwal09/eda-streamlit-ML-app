@@ -7,10 +7,8 @@ from langchain_groq import ChatGroq
 import pandas as pd
 import numpy as np
 import os
-from dotenv import load_dotenv
-load_dotenv()
 
-groq_key = st.secrets["GROQ"]["API_KEY"]
+groq_key = st.secrets["GROQ_API_KEY"]
 
 if not groq_key:
     st.error("❌ API key not found")
