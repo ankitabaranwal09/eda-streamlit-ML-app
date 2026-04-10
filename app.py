@@ -415,14 +415,17 @@ if uploaded_file:
             import pandas as pd
 
             X = df.drop(columns = [target]).copy()
+            X = pd.get_dummies(X, drop_first=True)
             for col in X.columns:
                 try:
-                    X[col] = pd.to_numeric(x[col])
+                    X[col] = pd.to_numeric(X[col])
                 except:
                     pass
             y = df[target]
             X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
             y = y.replace([np.inf, -np.inf], np.nan).fillna(0)
+            X = X.fillna(X.median(numeric_only=True))
+            y = y.fillna(0)
             if y.nunique() <= 1:
                 st.error("❌ Target column has only one unique value. Cannot train model.")
                 st.stop()
@@ -431,6 +434,7 @@ if uploaded_file:
             if y.dtype == "object":
                 le = LabelEncoder()
                 y = le.fit_transform(y)
+                y = y.astype(int)
                 st.session_state.label_encoder = le
                 
             st.session_state.original_columns = X.columns.tolist()
@@ -518,7 +522,12 @@ if uploaded_file:
 
                 # Train model
                 model = get_model(model_choice, task)
-                model.fit(X_train, y_train)
+                try:
+                    model.fit(X_train, y_train)
+                except Exception as e:
+                    st.error(f"❌ Training Failed: {e}")
+                    st.stop()   
+                
                 preds = model.predict(X_test)
             
 
@@ -884,6 +893,7 @@ if uploaded_file:
             st.subheader("🤖 AI Model Recommendation")
             import pandas as pd
             X = df.drop(columns = [target_ai])
+            X = pd.get_dummies(X, drop_first=True)
             y = df[target_ai]
             
             text = response.content.lower()
