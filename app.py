@@ -159,7 +159,7 @@ if uploaded_file:
 
         st.subheader("🧾 Data Types")
         with st.expander("View Data Types"):
-            st.dataframe(dtypes.astype(str), width="stretch")
+            st.dataframe(dtypes.astype(str), use_container_width=True)
             
         
         st.subheader("📊 Data Quality Score")
@@ -199,7 +199,7 @@ if uploaded_file:
         unique_df.columns = ["Column", "Unique Values"]
         
         with st.expander("View Unique Values"):
-            st.dataframe(unique_df.astype(str), width="stretch")
+            st.dataframe(unique_df.astype(str), use_container_width=True)
 
         # Duplicates
         st.subheader("🔁 Duplicate Rows")
@@ -208,7 +208,7 @@ if uploaded_file:
         
         if duplicate_count > 0:
             with st.expander("View Duplicate Rows"):
-                st.dataframe(df[df.duplicated()].astype(str), width="stretch")
+                st.dataframe(df[df.duplicated()].astype(str), use_container_width=True)
             st.warning("⚠️ Dataset contains duplicate rows")
         else:
             st.success("✅ No duplicate rows found")
@@ -227,7 +227,7 @@ if uploaded_file:
 
         # ✅ Handle case when no numeric columns
         if isinstance(safe_summary, pd.DataFrame) and safe_summary.shape[1] > 0:
-            st.dataframe(safe_summary.astype(str), width="stretch")
+            st.dataframe(safe_summary.astype(str), use_container_width=True)
         else:
             st.warning("⚠️ No numeric columns found")
             
@@ -244,9 +244,9 @@ if uploaded_file:
         mv = missing_values(df)
         if hasattr(mv, "to_frame"):
             mv = mv.to_frame()
-        #st.dataframe(fix_dataframe_types(mv), width="stretch")
+        #st.dataframe(fix_dataframe_types(mv), use_container_width=True)
         mv = mv.astype(str)
-        st.dataframe(mv, width="stretch")
+        st.dataframe(mv, use_container_width=True)
 
     # -------- TAB 3 --------
     with tab3:
@@ -315,7 +315,7 @@ if uploaded_file:
             corr_target = temp_df.corr(numeric_only=True)[target_col].sort_values(ascending=False)
 
             st.subheader("📊 Feature Correlation with Target")
-            st.dataframe(corr_target.to_frame().astype(str), width="stretch")
+            st.dataframe(corr_target.to_frame().astype(str), use_container_width=True)
         else:
             st.warning("⚠️ Target column not suitable for correlation")
     
