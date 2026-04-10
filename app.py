@@ -526,9 +526,23 @@ if uploaded_file:
                 st.session_state.y_test = y_test
 
                 # Train model
+                import numpy as np
+                import pandas as pd
+
+                st.write("===== DEBUG START =====")
+
                 st.write("X_train shape:", X_train.shape)
-                st.write("y_train unique:", pd.Series(y_train).nunique())
-                st.write("Data types:", pd.DataFrame(X_train).dtypes.value_counts())
+                st.write("y_train shape:", len(y_train))
+
+                st.write("❗ NaN in X:", np.isnan(X_train).sum())
+                st.write("❗ NaN in y:", pd.isnull(y_train).sum())
+
+                st.write("🎯 y unique values:", pd.Series(y_train).unique())
+                st.write("🎯 y unique count:", pd.Series(y_train).nunique())
+
+                st.write("🎯 y dtype:", pd.Series(y_train).dtype)
+
+                st.write("===== DEBUG END =====")
                 if pd.Series(y_train).nunique() <= 1:
                     st.error("❌ Target has only ONE class after preprocessing")
                     st.stop()

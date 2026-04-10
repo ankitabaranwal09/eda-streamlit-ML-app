@@ -16,6 +16,7 @@ def preprocess_data(X, y, model_choice, task):
     X = pd.get_dummies(X, drop_first=True)
     X = X.apply(pd.to_numeric, errors='coerce')
     X = X.replace([np.inf, -np.inf], np.nan)
+    X = X.fillna(X.median(numeric_only=True))
     X = X.fillna(0)
 
     # ---------------- y Processing ----------------
@@ -27,12 +28,13 @@ def preprocess_data(X, y, model_choice, task):
     y = y.fillna(0)
 
     if task == "Classification":
-        if y.dtype == "object":
-            le = LabelEncoder()
-            y = le.fit_transform(y)
+        le = LabelEncoder()
+        y = le.fit_transform(y)   # 🔥 ALWAYS encode
 
-        # 🔴 CRITICAL FIX
         y = pd.Series(y).astype(int)
+
+        if pd.Series(y).nunique() <= 1:
+            raise ValueError("Target has only one class")
 
         # 🔴 CRITICAL CHECK
         if pd.Series(y).nunique() <= 1:
