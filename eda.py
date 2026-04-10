@@ -9,16 +9,36 @@ def make_df_safe(df):
 
 def preprocess_data(X, y, model_choice):
     import pandas as pd
+    import numpy as np
     from sklearn.preprocessing import LabelEncoder
 
-    # Handle categorical features
-    X = pd.get_dummies(X)
+    # ---------------- X Processing ----------------
+    # Convert categorical → numeric
+    X = pd.get_dummies(X, drop_first=True)
 
-    # Encode target if classification
+    # Convert all to numeric safely
+    X = X.apply(pd.to_numeric, errors='coerce')
+
+    # Remove inf / -inf
+    X = X.replace([np.inf, -np.inf], np.nan)
+
+    # Fill missing values
+    X = X.fillna(0)
+
+    # ---------------- y Processing ----------------
     le = None
-    if y.dtype == "object":
-        le = LabelEncoder()
-        y = le.fit_transform(y)
+
+    if model_choice in ["Random Forest", "XGBoost", "Logistic Regression"]:
+        # Classification case
+        if y.dtype == "object":
+            le = LabelEncoder()
+            y = le.fit_transform(y)
+
+    # Convert y to numeric safely
+    y = pd.Series(y)
+    y = y.replace([np.inf, -np.inf], np.nan)
+    y = y.fillna(0)
+
     return X, y, le
 
 def basic_info(df):
@@ -75,12 +95,21 @@ def get_model(model_choice, task, params=None):
         if task == "Classification":
             from xgboost import XGBClassifier
             return XGBClassifier(
+                n_estimators = 100,
+                max_depth = 5,
+                learning_rate = 0.1,
                 eval_metric='logloss',
+                use_label_encoder = False,
                 **params
             )
         else:
             from xgboost import XGBRegressor
-            return XGBRegressor(**params)
+            return XGBRegressor(
+                n_estimators = 100,
+                max_depth = 5,
+                learning_rate = 0.1,
+                **params
+            )
     elif model_choice == "Logistic Regression":
         from sklearn.linear_model import LogisticRegression
         return LogisticRegression(

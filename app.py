@@ -422,8 +422,13 @@ if uploaded_file:
                 except:
                     pass
             y = df[target]
-            X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
-            y = y.replace([np.inf, -np.inf], np.nan).fillna(0)
+            X = X.replace([np.inf, -np.inf], np.nan)
+            X = X.fillna(0)
+
+            y = y.replace([np.inf, -np.inf], np.nan)
+            y = y.fillna(0)
+            X = X.astype(float)
+            
             X = X.fillna(X.median(numeric_only=True))
             y = y.fillna(0)
             if y.nunique() <= 1:
@@ -521,6 +526,9 @@ if uploaded_file:
                 st.session_state.y_test = y_test
 
                 # Train model
+                st.write("X_train shape:", X_train.shape)
+                st.write("y_train unique:", pd.Series(y_train).nunique())
+                st.write("Data types:", pd.DataFrame(X_train).dtypes.value_counts())
                 model = get_model(model_choice, task)
                 try:
                     model.fit(X_train, y_train)
