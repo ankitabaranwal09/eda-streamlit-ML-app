@@ -1,8 +1,8 @@
 streamlit
 pandas
-numpy
-scikit-learn
-xgboost
+numpy==1.26.4
+scikit-learn==1.5.0
+xgboost==2.0.3
 matplotlib
 seaborn
 langchain

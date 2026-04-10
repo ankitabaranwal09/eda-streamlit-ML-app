@@ -105,6 +105,9 @@ def get_model(model_choice, task, params=None):
                 max_depth = 5,
                 learning_rate = 0.1,
                 eval_metric='logloss',
+                tree_method = "hist",
+                enable_categorical = False,
+                n_jobs = -1,
                 use_label_encoder = False,
                 **params
             )

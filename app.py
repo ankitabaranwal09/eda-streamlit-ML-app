@@ -550,8 +550,13 @@ if uploaded_file:
                 try:
                     model.fit(X_train, y_train)
                 except Exception as e:
-                    st.error(f"❌ Training Failed: {e}")
-                    st.stop()   
+                    st.error(f"❌ XGBoost failed: {e}")
+    
+                    st.warning("⚠️ Switching to Random Forest as fallback")
+    
+                    from sklearn.ensemble import RandomForestClassifier
+                    model = RandomForestClassifier()
+                    model.fit(X_train, y_train)
                 
                 preds = model.predict(X_test)
             
