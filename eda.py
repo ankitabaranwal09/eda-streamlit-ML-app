@@ -7,37 +7,41 @@ def make_df_safe(df):
     safe_df = safe_df.replace([np.inf, -np.inf], np.nan)
     return safe_df
 
-def preprocess_data(X, y, model_choice):
+def preprocess_data(X, y, model_choice, task):
     import pandas as pd
     import numpy as np
     from sklearn.preprocessing import LabelEncoder
 
     # ---------------- X Processing ----------------
-    # Convert categorical → numeric
     X = pd.get_dummies(X, drop_first=True)
-
-    # Convert all to numeric safely
     X = X.apply(pd.to_numeric, errors='coerce')
-
-    # Remove inf / -inf
     X = X.replace([np.inf, -np.inf], np.nan)
-
-    # Fill missing values
     X = X.fillna(0)
 
     # ---------------- y Processing ----------------
     le = None
+    y = pd.Series(y)
 
-    if model_choice in ["Random Forest", "XGBoost", "Logistic Regression"]:
-        # Classification case
+    # Remove bad values
+    y = y.replace([np.inf, -np.inf], np.nan)
+    y = y.fillna(0)
+
+    if task == "Classification":
         if y.dtype == "object":
             le = LabelEncoder()
             y = le.fit_transform(y)
 
-    # Convert y to numeric safely
-    y = pd.Series(y)
-    y = y.replace([np.inf, -np.inf], np.nan)
-    y = y.fillna(0)
+        # 🔴 CRITICAL FIX
+        y = pd.Series(y).astype(int)
+
+        # 🔴 CRITICAL CHECK
+        if pd.Series(y).nunique() <= 1:
+            raise ValueError("Target has only one class")
+
+    else:
+        # Regression
+        y = pd.to_numeric(y, errors='coerce')
+        y = y.fillna(0)
 
     return X, y, le
 

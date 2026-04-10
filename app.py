@@ -449,7 +449,7 @@ if uploaded_file:
             col: X[col].dropna().unique().tolist() for col in cat_cols
             }
 
-            X, y, le = preprocess_data(X, y, model_choice)
+            X, y, le = preprocess_data(X, y, model_choice, task)
             st.session_state.label_encoder = le
             st.session_state.model_columns = X.columns.tolist()
             
@@ -529,6 +529,9 @@ if uploaded_file:
                 st.write("X_train shape:", X_train.shape)
                 st.write("y_train unique:", pd.Series(y_train).nunique())
                 st.write("Data types:", pd.DataFrame(X_train).dtypes.value_counts())
+                if pd.Series(y_train).nunique() <= 1:
+                    st.error("❌ Target has only ONE class after preprocessing")
+                    st.stop()
                 model = get_model(model_choice, task)
                 try:
                     model.fit(X_train, y_train)
@@ -651,6 +654,9 @@ if uploaded_file:
 
                 # ✅ Train model
                 model = get_model(model_choice, task, user_params)
+                if pd.Series(st.session_state.y_train).nunique() <= 1:
+                    st.error("❌ Target has only ONE class after preprocessing")
+                    st.stop()
                 model.fit(st.session_state.X_train, st.session_state.y_train)
 
                 preds = model.predict(st.session_state.X_test)
