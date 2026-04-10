@@ -105,6 +105,7 @@ if uploaded_file:
         # Step 3: Safety Check 
         if cleaned_df[target_for_cleaning].nunique() <= 1:
             st.error("❌ Target column collapsed! Try using 'Cap' instead of 'Remove'.")
+            st.stop()
         st.session_state.cleaned_df = cleaned_df
         st.session_state.cleaning_report = report
 
@@ -413,15 +414,25 @@ if uploaded_file:
             import numpy as np
             import pandas as pd
 
-            X = df.drop(columns=[target]).copy()
-            # 
+            X = df.drop(columns = [target]).copy()
             for col in X.columns:
                 try:
-                    X[col] = pd.to_numeric(X[col])
+                    X[col] = pd.to_numeric(x[col])
                 except:
                     pass
             y = df[target]
-            
+            X = X.replace([np.inf, -np.inf], np.nan).fillna(0)
+            y = y.replace([np.inf, -np.inf], np.nan).fillna(0)
+            if y.nunique() <= 1:
+                st.error("❌ Target column has only one unique value. Cannot train model.")
+                st.stop()
+                
+            from sklearn.preprocessing import LabelEncoder
+            if y.dtype == "object":
+                le = LabelEncoder()
+                y = le.fit_transform(y)
+                st.session_state.label_encoder = le
+                
             st.session_state.original_columns = X.columns.tolist()
             cat_cols = X.select_dtypes(include=["object"]).columns.tolist()
             st.session_state.categorical_cols = cat_cols
