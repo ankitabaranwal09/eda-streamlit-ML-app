@@ -138,7 +138,7 @@ if uploaded_file:
     # -------- TAB 1 --------
     with tab1:
         st.subheader("📄 Dataset Preview")
-        st.dataframe(make_df_safe(df), width="stretch")
+        st.dataframe(make_df_safe(df), use_container_width=True)
 
     # -------- TAB 2 --------
     with tab2:
