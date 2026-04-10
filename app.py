@@ -381,7 +381,7 @@ if uploaded_file:
         task = st.radio("🧠 Select Task", ["Classification", "Regression"])
         model_choice = st.selectbox(
             "📦 Select Model",
-            ["Random Forest", "Linear Regression", "Logistic Regression", "XGBoost"]
+            ["Random Forest", "Linear Regression", "Logistic Regression"]
         )
         st.divider()
 
@@ -547,7 +547,7 @@ if uploaded_file:
                     X_test = np.array(X_test, dtype=np.float32)
                     model.fit(X_train, y_train)
                 except Exception as e:
-                    st.error(f"❌ XGBoost failed: {e}")
+                    st.error(f"❌ Models failed: {e}")
                     st.stop()
     
                 preds = model.predict(X_test)
@@ -925,17 +925,7 @@ if uploaded_file:
             # Classification
             if "classification" in text:
                 task = "Classification"
-                if "xgboost" in text:
-                    from xgboost import XGBClassifier
-                    model = XGBClassifier(
-                        n_estimators = 100,
-                        max_depth = 5,
-                        learning_rate = 0.1,
-                        eval_metric = 'logloss'
-                    )
-                    model_choice = "XGBoost"
-                    model_name = "XGBoost Classifier"
-                elif "random forest" in text:
+                if "random forest" in text:
                     from sklearn.ensemble import RandomForestClassifier
                     model = RandomForestClassifier()
                     model_choice = "Random Forest"
@@ -950,16 +940,7 @@ if uploaded_file:
             # Regression
             else:
                 task = "Regression"
-                if "xgboost" in text:
-                    from xgboost import XGBRegressor
-                    model = XGBRegressor(
-                        n_estimators = 100,
-                        max_depth = 5,
-                        learning_rate = 0.1
-                    )
-                    model_choice = "XGBoost"
-                    model_name = "XGBoost Regressor"
-                elif "random forest" in text:
+                if "random forest" in text:
                     from sklearn.ensemble import RandomForestRegressor
                     model = RandomForestRegressor()
                     model_choice = "Random Forest"
@@ -1019,12 +1000,10 @@ if uploaded_file:
             if task == "Classification":
                 from sklearn.ensemble import RandomForestClassifier
                 from sklearn.linear_model import LogisticRegression
-                from xgboost import XGBClassifier
                 
                 models = {
                     "Random Forest" : RandomForestClassifier(),
-                    "Logistic Regression" : LogisticRegression(max_iter = 5000, solver = "lbfgs", n_jobs = -1),
-                    "XGBoost" : XGBClassifier(eval_metric = 'logloss')
+                    "Logistic Regression" : LogisticRegression(max_iter = 5000, solver = "lbfgs", n_jobs = -1)
                 }
                 for name, model in models.items():
                     model.fit(X_train, y_train)
@@ -1038,12 +1017,10 @@ if uploaded_file:
             else:
                 from sklearn.ensemble import RandomForestRegressor
                 from sklearn.linear_model import LinearRegression
-                from xgboost import XGBRegressor
                 
                 models = {
                     "Linear Regression" : LinearRegression(),
                     "Random Forest" : RandomForestRegressor(),
-                    "XGBoost" : XGBRegressor()
                 }
                 
                 for name, model in models.items():

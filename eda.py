@@ -97,32 +97,6 @@ def get_model(model_choice, task, params=None):
         from sklearn.linear_model import LinearRegression
         return LinearRegression(**params)
 
-    elif model_choice == "XGBoost":
-        if task == "Classification":
-            from sklearn.preprocessing import LabelEncoder
-            if y.dtype == "object":
-                le = LabelEncoder()
-                y = le.fit_transform(y)
-                y = y - y.min()
-                if y.nunique() <= 1:
-                    raise ValueError("Target has only one class")
-            from xgboost import XGBClassifier
-            return XGBClassifier(
-                n_estimators=100,
-                max_depth=5,
-                learning_rate=0.1,
-                eval_metric='logloss',
-                tree_method='hist',   # 🔥 IMPORTANT FIX
-                **params
-            )
-        else:
-            from xgboost import XGBRegressor
-            return XGBRegressor(
-                n_estimators = 100,
-                max_depth = 5,
-                learning_rate = 0.1,
-                **params
-            )
     elif model_choice == "Logistic Regression":
         from sklearn.linear_model import LogisticRegression
         return LogisticRegression(
