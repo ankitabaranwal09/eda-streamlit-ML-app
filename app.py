@@ -435,12 +435,7 @@ if uploaded_file:
                 st.error("❌ Target column has only one unique value. Cannot train model.")
                 st.stop()
                 
-            from sklearn.preprocessing import LabelEncoder
-            if y.dtype == "object":
-                le = LabelEncoder()
-                y = le.fit_transform(y)
-                y = y.astype(int)
-                st.session_state.label_encoder = le
+            
                 
             st.session_state.original_columns = X.columns.tolist()
             cat_cols = X.select_dtypes(include=["object"]).columns.tolist()

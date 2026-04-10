@@ -99,6 +99,13 @@ def get_model(model_choice, task, params=None):
 
     elif model_choice == "XGBoost":
         if task == "Classification":
+            from sklearn.preprocessing import LabelEncoder
+            if y.dtype == "object":
+                le = LabelEncoder()
+                y = le.fit_transform(y)
+                y = y - y.min()
+                if y.nunique() <= 1:
+                    raise ValueError("Target has only one class")
             from xgboost import XGBClassifier
             return XGBClassifier(
                 n_estimators=100,
