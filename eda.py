@@ -101,14 +101,11 @@ def get_model(model_choice, task, params=None):
         if task == "Classification":
             from xgboost import XGBClassifier
             return XGBClassifier(
-                n_estimators = 100,
-                max_depth = 5,
-                learning_rate = 0.1,
+                n_estimators=100,
+                max_depth=5,
+                learning_rate=0.1,
                 eval_metric='logloss',
-                tree_method = "hist",
-                enable_categorical = False,
-                n_jobs = -1,
-                use_label_encoder = False,
+                tree_method='hist',   # 🔥 IMPORTANT FIX
                 **params
             )
         else:

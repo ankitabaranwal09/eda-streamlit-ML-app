@@ -548,16 +548,13 @@ if uploaded_file:
                     st.stop()
                 model = get_model(model_choice, task)
                 try:
+                    X_train = np.array(X_train, dtype=np.float32)
+                    X_test = np.array(X_test, dtype=np.float32)
                     model.fit(X_train, y_train)
                 except Exception as e:
                     st.error(f"❌ XGBoost failed: {e}")
+                    st.stop()
     
-                    st.warning("⚠️ Switching to Random Forest as fallback")
-    
-                    from sklearn.ensemble import RandomForestClassifier
-                    model = RandomForestClassifier()
-                    model.fit(X_train, y_train)
-                
                 preds = model.predict(X_test)
             
 
